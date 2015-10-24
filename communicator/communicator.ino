@@ -107,7 +107,17 @@ void loop() // run over and over
         
         if (numberOfDigitalPins >= thePin)  // pin is generally available
         {
-          if (theValue > 1)  // you want to set a pwm
+          if (theValue == 0) // you want to set a digital pin
+          {
+            digitalWrite(thePin, LOW);
+            if (FEEDBACK) Serial.println("Digital Pin set");
+          }
+          else if (theValue == 1) // you want to set a digital pin
+          {
+            digitalWrite(thePin, HIGH);
+            if (FEEDBACK) Serial.println("Digital Pin set");
+          }
+          else if (theValue > 1)  // you want to set a pwm
           {
             if (theValue > 255)  // the pwm is very large, too large!
             {
@@ -127,11 +137,6 @@ void loop() // run over and over
           else if (theValue < 0)  // received a value lower than 0
           {
             if (FEEDBACK) Serial.println("You can not set the pin lower than 0");
-          }
-          else  // you want to set a digital pin
-          {
-            digitalWrite(thePin, theValue);
-            if (FEEDBACK) Serial.println("Digital Pin set");
           }
         }
         else
