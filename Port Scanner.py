@@ -27,6 +27,8 @@ import platform
 from serial.tools import list_ports
 import threading
 import time
+import sys
+import datetime
 
 class myThread (threading.Thread):
     myThreadFlag = 0
@@ -37,7 +39,7 @@ class myThread (threading.Thread):
         self.functionArguments = args
     def run(self):
         if self.name is not "":
-            print "Starting " + self.name
+            print "Starting " + self.name,
         time.sleep(1)
         #newCom.print_working()
         #newCom.find_port(9600, 1)
@@ -80,14 +82,42 @@ class Communication(object):
     def printPorts(self):
         print(self.truePorts)
 
+class Connection(object):
+    """docstring for Connection"""
+    def __init__(self):
+        super(Connection, self).__init__()
+        self.port = serial.Serial(
+            port="/dev/cu.wchusbserial620", 
+            baudrate=9600, 
+            timeout=3.0)
+    def sendCmd(self):
+        print "sendCmd", datetime.datetime.now()
+        self.port.write("n")
+        
+    def readPort(self):
+        print "reading..."
+        doIt = True
+        while doIt:
+            lineRead = str(self.port.readline())
+            print (lineRead)
+            if len(lineRead) > 0:
+                print "done reading", datetime.datetime.now()
+                doIt = False
+                sys.exit()
+
 if __name__=='__main__':
-    newCom = Communication()
-    # Create new threads
-    workingThread = myThread(newCom.print_working)
-    scanningThread = myThread(newCom.find_port, "Scan", 9600, 1)
+    newConnection = Connection()
+    readThread = myThread(newConnection.readPort)
+    readThread.start()
+    time.sleep(5)
+    newConnection.sendCmd()
+    # newCom = Communication()
+    # # Create new threads
+    # workingThread = myThread(newCom.print_working)
+    # scanningThread = myThread(newCom.find_port, "Scan", 9600, 1)
 
-    # Start new Threads
-    workingThread.start()
-    scanningThread.start()
+    # # Start new Threads
+    # workingThread.start()
+    # scanningThread.start()
 
-    #print(threading.enumerate())
+    # #print(threading.enumerate())
